@@ -1,6 +1,8 @@
 package com.http;
 
 import com.google.gson.JsonObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -9,7 +11,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class GetData {
     /**
@@ -87,13 +91,25 @@ public class GetData {
     }
 
     //测试
-    public static void main(String args [] ) {
-//        JsonObject res = null;
-        String responseStr = null;
-        JsonObject res2 = null;
-//        for (int k=1;k<=631;k++) {
-//           //获取某一页的数据可以根据“nextPageNo=*”来指定，就是字符串拼接下，把1换成n
-        System.out.println(postDownloadRes("https://try.jgc99.com/lottery/last?tephra-session-id=BQb5FJp3AP4fSz5p7VFN6VOG1544501890392&type=zypk10&size=200", ""));
-
+    public static void main(String args [] ) throws IOException {
+        File file = new File("D:test.txt");
+        if(!file.getParentFile().exists()){
+            file.getParentFile().mkdirs();
+        }
+        //2：准备输出流
+        Writer out = new FileWriter(file);
+        for(int i=1000000;i<1000100;i++){
+            HttpUtils.setProxyIp();
+            String html = getRequest("http://mobile.yangkeduo.com/mall_page.html?mall_id="+i);
+            Document doc = Jsoup.parse(html);
+            if(!doc.select("div[class=mpmi-name-container]").text().equals("")){
+                System.out.println("+"+doc.select("div[class=mpmi-name-container]").text()+"+");
+                out.write("http://mobile.yangkeduo.com/mall_page.html?mall_id="+i);
+            }
+        }
+        out.close();
     }
+
+
+
 }
